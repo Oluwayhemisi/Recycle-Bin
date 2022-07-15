@@ -1,5 +1,6 @@
 package africa.semicolon.recycle_bin.service;
 
+import africa.semicolon.recycle_bin.data.repositories.RecycleBinRepository;
 import africa.semicolon.recycle_bin.dto.request.CreateEntryRequest;
 import africa.semicolon.recycle_bin.dto.responses.CreateEntryResponse;
 import africa.semicolon.recycle_bin.dto.request.DeleteEntryRequest;
@@ -15,12 +16,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
-public class EntryImplementation implements EntryService{
+public class EntryServiceImpl implements EntryService{
 
     @Autowired
     private EntryRepository entryRepository;
     @Autowired
     private RecycleBinService recycleBinService;
+    @Autowired
+    private RecycleBinRepository recycleBinRepository;
 
 
     @Override
@@ -43,20 +46,14 @@ public class EntryImplementation implements EntryService{
         Optional <Entry> foundEntry= entryRepository.findByTitle(request.getTitle());
         if(foundEntry.isEmpty()) throw new NullPointerException("Entry cannot be found");
         Entry entry = foundEntry.get();
-        entryRepository.delete(entry);
+        Entry deletedEntry = entryRepository.deleteEntry(entry);
+        Entry savedEntry = recycleBinService.saveEntry(deletedEntry);
 
         RecycleBin recycledEntry = new RecycleBin();
         recycledEntry.setTitle(request.getTitle());
 
-         Entry savedEntry = recycleBinService.saveEntry(entry);
-         RecycleBin savedRecycledEntry = recycleBinService.saveRecycle(recycledEntry);
-         entry.getEntries().add(savedRecycledEntry);
-         recycleBinService.deleteEntry(savedEntry);
-
-
          DeleteEntryResponse response = new DeleteEntryResponse();
-         response.setTitle(savedRecycledEntry.getTitle());
-         response.setMessage(savedRecycledEntry.getTitle()+"has been successfully deleted");
+         response.setMessage(savedEntry.getTitle()+"has been successfully deleted");
          return response;
 
 

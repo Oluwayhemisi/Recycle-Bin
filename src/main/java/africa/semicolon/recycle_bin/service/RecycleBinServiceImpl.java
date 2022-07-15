@@ -18,8 +18,6 @@ public class RecycleBinServiceImpl implements RecycleBinService{
     @Override
     public void deleteEntry(Entry entry) {
          entryRepository.delete(entry);
-//         recycleBinRepository.delete();
-
     }
 
     @Override
