@@ -10,6 +10,6 @@ public interface RecycleBinService {
 
     Entry saveEntry(Entry entry);
 
-    RecycleBin saveRecycle(RecycleBin recycledEntry);
+
 }
 

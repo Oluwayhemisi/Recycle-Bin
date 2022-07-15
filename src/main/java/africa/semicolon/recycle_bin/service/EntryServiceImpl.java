@@ -1,5 +1,6 @@
 package africa.semicolon.recycle_bin.service;
 
+import africa.semicolon.recycle_bin.data.repositories.RecycleBinRepository;
 import africa.semicolon.recycle_bin.dto.request.CreateEntryRequest;
 import africa.semicolon.recycle_bin.dto.responses.CreateEntryResponse;
 import africa.semicolon.recycle_bin.dto.request.DeleteEntryRequest;
@@ -12,15 +13,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
 
 @Service
-public class EntryImplementation implements EntryService{
+public class EntryServiceImpl implements EntryService{
 
     @Autowired
     private EntryRepository entryRepository;
     @Autowired
     private RecycleBinService recycleBinService;
+    @Autowired
+    private RecycleBinRepository recycleBinRepository;
+    private int idCount;
 
 
     @Override
@@ -43,23 +48,24 @@ public class EntryImplementation implements EntryService{
         Optional <Entry> foundEntry= entryRepository.findByTitle(request.getTitle());
         if(foundEntry.isEmpty()) throw new NullPointerException("Entry cannot be found");
         Entry entry = foundEntry.get();
+        Entry savedEntry = recycleBinService.saveEntry(entry);
         entryRepository.delete(entry);
 
         RecycleBin recycledEntry = new RecycleBin();
         recycledEntry.setTitle(request.getTitle());
-
-         Entry savedEntry = recycleBinService.saveEntry(entry);
-         RecycleBin savedRecycledEntry = recycleBinService.saveRecycle(recycledEntry);
-         entry.getEntries().add(savedRecycledEntry);
-         recycleBinService.deleteEntry(savedEntry);
-
+        recycledEntry.setId(String.valueOf(idCount));
+        idCount++;
 
          DeleteEntryResponse response = new DeleteEntryResponse();
-         response.setTitle(savedRecycledEntry.getTitle());
-         response.setMessage(savedRecycledEntry.getTitle()+"has been successfully deleted");
+         response.setMessage(savedEntry.getTitle()+"has been successfully deleted");
          return response;
 
 
 
+    }
+
+    @Override
+    public List<Entry> getAllEntries() {
+        return entryRepository.findAll();
     }
 }
