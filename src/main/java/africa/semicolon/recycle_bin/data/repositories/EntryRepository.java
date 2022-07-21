@@ -13,6 +13,10 @@ public interface EntryRepository extends MongoRepository<Entry,String> {
 
     Optional<Entry> findByTitle(String title);
 
+<<<<<<< HEAD
     void delete(Entry entry);
+=======
+    Entry deleteEntry(Entry entry);
+>>>>>>> origin/main
 
 }

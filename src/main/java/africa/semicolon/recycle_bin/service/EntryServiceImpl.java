@@ -25,7 +25,10 @@ public class EntryServiceImpl implements EntryService{
     private RecycleBinService recycleBinService;
     @Autowired
     private RecycleBinRepository recycleBinRepository;
+<<<<<<< HEAD:src/main/java/africa/semicolon/recycle_bin/service/EntryServiceImpl.java
     private int idCount;
+=======
+>>>>>>> origin/main:src/main/java/africa/semicolon/recycle_bin/service/EntryImplementation.java
 
 
     @Override
@@ -48,6 +51,7 @@ public class EntryServiceImpl implements EntryService{
         Optional <Entry> foundEntry= entryRepository.findByTitle(request.getTitle());
         if(foundEntry.isEmpty()) throw new NullPointerException("Entry cannot be found");
         Entry entry = foundEntry.get();
+<<<<<<< HEAD:src/main/java/africa/semicolon/recycle_bin/service/EntryServiceImpl.java
         Entry savedEntry = recycleBinService.saveEntry(entry);
         entryRepository.delete(entry);
 
@@ -55,6 +59,13 @@ public class EntryServiceImpl implements EntryService{
         recycledEntry.setTitle(request.getTitle());
         recycledEntry.setId(String.valueOf(idCount));
         idCount++;
+=======
+        Entry deletedEntry = entryRepository.deleteEntry(entry);
+        Entry savedEntry = recycleBinService.saveEntry(deletedEntry);
+
+        RecycleBin recycledEntry = new RecycleBin();
+        recycledEntry.setTitle(request.getTitle());
+>>>>>>> origin/main:src/main/java/africa/semicolon/recycle_bin/service/EntryImplementation.java
 
          DeleteEntryResponse response = new DeleteEntryResponse();
          response.setMessage(savedEntry.getTitle()+"has been successfully deleted");
